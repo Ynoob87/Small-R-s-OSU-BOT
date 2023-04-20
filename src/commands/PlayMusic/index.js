@@ -1,9 +1,9 @@
-import { slashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
-export const command = new slashCommandBuilder()
+export const command = new SlashCommandBuilder()
   .setName("播放")
-  .setDescripition("撥放音樂");
+  .setDescription("撥放音樂");
 
 const action = async (ctx) => {
-  ctx.reply("hello")
+  ctx.reply("hello");
 };
