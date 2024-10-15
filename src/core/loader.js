@@ -2,8 +2,9 @@ import { Presence, REST, Routes } from "discord.js";
 import FastGlob from "fast-glob";
 
 const updateSlashCommands = async (commands) => {
-  const rest = new REST({ version: 10 }).setToken(process.env.TOKEN);
-  const result = await rest.put(Routes.applicationCommands(process.env.APPLICATION_ID),
+  const rest = new REST({ version: 10 }).setToken(process.env.DISCORD_TOKEN);
+  const result = await rest.put(
+    Routes.applicationCommands(process.env.APPLICATION_ID),
     {
       body: commands,
     }
