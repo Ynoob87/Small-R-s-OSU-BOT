@@ -49,6 +49,7 @@ export const action = async (interaction) => {
     const recentScore = response.data[0];
     if (recentScore) {
       const MaxCombo = await getMaxCombo(recentScore.beatmap.id);
+      console.log(recentScore);
 
       const exampleEmbed = new EmbedBuilder()
         .setColor(0x0099ff)
