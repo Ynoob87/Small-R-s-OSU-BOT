@@ -2,16 +2,15 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import axios from "axios";
 import dotenv from "dotenv";
-// 有用的函式庫
 import { getOsuToken } from "../../utils/getOsuToken";
 import { convertToPercentage } from "../../utils/convertToPercentage";
-import { getMaxCombo } from "../../utils/calculateMaxCombo";
+import { getMaxCombo } from "../../utils/calculateMaxCombo"; // 確保路徑正確
 
 dotenv.config();
 
 export const command = new SlashCommandBuilder()
-  .setName("最近通過")
-  .setDescription("查詢最近通過的地圖的成績")
+  .setName("最近成績")
+  .setDescription("查詢最近的所有成績")
   .addStringOption((option) =>
     option.setName("用戶名").setDescription("要查詢的用戶名").setRequired(true)
   );
@@ -20,9 +19,7 @@ export const action = async (interaction) => {
   const username = interaction.options.getString("用戶名");
   try {
     const accessToken = await getOsuToken();
-
     console.log(`查詢用戶名: ${username}`);
-    //console.log(`使用的 OAuth Token: ${accessToken}`);
 
     const userResponse = await axios.get(
       `https://osu.ppy.sh/api/v2/users/${username}`,
@@ -33,11 +30,10 @@ export const action = async (interaction) => {
       }
     );
 
-    // console.log(`User API Response: ${JSON.stringify(userResponse.data)}`);
-
     const userId = userResponse.data.id;
     console.log(`User ID: ${userId}`);
 
+    // 使用新的API端點獲取最近的所有成績
     const response = await axios.get(
       `https://osu.ppy.sh/api/v2/users/${userId}/scores/recent`,
       {
@@ -50,16 +46,9 @@ export const action = async (interaction) => {
       }
     );
 
-    //console.log(`API 回應狀態碼: ${response.status}`);
-    //console.log(`API 回應數據: ${JSON.stringify(response.data)}`);
-
     const recentScore = response.data[0];
     if (recentScore) {
       const MaxCombo = await getMaxCombo(recentScore.beatmap.id);
-
-      console.log(recentScore.beatmap.id);
-      console.log(recentScore);
-      //console.log(userResponse);
 
       const exampleEmbed = new EmbedBuilder()
         .setColor(0x0099ff)
@@ -73,10 +62,11 @@ export const action = async (interaction) => {
         .setURL(recentScore.beatmap.url)
         .setImage(`${recentScore.beatmapset.covers.cover}`)
         .addFields(
-          // Performance Information
           {
             name: "獲得的PP",
-            value: `${recentScore.pp.toFixed(2)}PP`,
+            value: `${
+              recentScore.pp == null ? 0 : recentScore.pp.toFixed(2)
+            }PP`,
             inline: true,
           },
           {
@@ -89,8 +79,6 @@ export const action = async (interaction) => {
             value: `${convertToPercentage(recentScore.accuracy)}`,
             inline: true,
           },
-
-          // Mods and Combos
           {
             name: "所使用的Mods",
             value: `${
@@ -103,21 +91,12 @@ export const action = async (interaction) => {
             value: `x${recentScore.max_combo}/${MaxCombo}`,
             inline: true,
           },
-
-          // Hit Statistics Breakdown
           {
-            name: "統計數據 (300/100/50/Miss)",
+            name: "統計數據",
             value: `[${recentScore.statistics.count_300}/${recentScore.statistics.count_100}/${recentScore.statistics.count_50}/${recentScore.statistics.count_miss}]`,
             inline: true,
           }
         );
-
-      //.setTimestamp(recentScore.date)
-      /*
-        .addField("地圖評分", `${recentScore.rank}`, true)
-        .addField("使用的Mods", `[${recentScore.mods.join(", ")}]`, true)
-        .setTimestamp(recentScore.date)
-        .setFooter(`用戶: ${username}`);*/
 
       await interaction.reply({ embeds: [exampleEmbed] });
     } else {
