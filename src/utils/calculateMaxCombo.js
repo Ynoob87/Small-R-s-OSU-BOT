@@ -1,6 +1,7 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { getOsuToken } from "./getOsuToken";
+
+import { getOsuToken } from "@/utils/getOsuToken";
 
 dotenv.config();
 

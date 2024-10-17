@@ -3,9 +3,9 @@ import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import axios from "axios";
 import dotenv from "dotenv";
 // 一些函式庫
-import { getOsuToken } from "../../utils/getOsuToken";
-import { convertToPercentage } from "../../utils/convertToPercentage";
-import { getMaxCombo } from "../../utils/calculateMaxCombo";
+import { getOsuToken } from "@/utils/getOsuToken";
+import { convertToPercentage } from "@/utils/convertToPercentage";
+import { getMaxCombo } from "@/utils/calculateMaxCombo";
 
 dotenv.config();
 
