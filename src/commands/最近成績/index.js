@@ -98,7 +98,12 @@ export const action = async (interaction) => {
             value: `[${recentScore.statistics.count_300}/${recentScore.statistics.count_100}/${recentScore.statistics.count_50}/${recentScore.statistics.count_miss}]`,
             inline: true,
           }
-        );
+        )
+        .setFooter({
+          text: "Made By Small R <3",
+          iconURL:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Osu%21_Logo_2016.svg/2048px-Osu%21_Logo_2016.svg.png", // 這裡提供一個有效的URL
+        });
 
       await interaction.reply({ embeds: [exampleEmbed] });
     } else {
