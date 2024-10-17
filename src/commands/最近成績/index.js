@@ -14,10 +14,24 @@ export const command = new SlashCommandBuilder()
   .setDescription("查詢最近的所有成績")
   .addStringOption((option) =>
     option.setName("用戶名").setDescription("要查詢的用戶名").setRequired(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("模式")
+      .setDescription("選擇遊戲模式（可選）")
+      .setRequired(false)
+      .addChoices(
+        { name: "osu!", value: "osu" },
+        { name: "osu!taiko", value: "taiko" },
+        { name: "osu!catch", value: "fruits" },
+        { name: "osu!mania", value: "mania" }
+      )
   );
 
 export const action = async (interaction) => {
   const username = interaction.options.getString("用戶名");
+  const mode = interaction.options.getString("模式");
+
   try {
     const accessToken = await getOsuToken();
     console.log(`查詢用戶名: ${username}`);
@@ -34,7 +48,6 @@ export const action = async (interaction) => {
     const userId = userResponse.data.id;
     console.log(`User ID: ${userId}`);
 
-    // 使用新的API端點獲取最近的所有成績
     const response = await axios.get(
       `https://osu.ppy.sh/api/v2/users/${userId}/scores/recent`,
       {
@@ -42,6 +55,8 @@ export const action = async (interaction) => {
           Authorization: `Bearer ${accessToken}`,
         },
         params: {
+          include_fails: 1,
+          mode: mode,
           limit: 1,
         },
       }
@@ -100,7 +115,7 @@ export const action = async (interaction) => {
           }
         )
         .setFooter({
-          text: "Made By Small R <3",
+          text: `osu! Mode - ${recentScore.mode}  [ Bot Made By small R ] `,
           iconURL:
             "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Osu%21_Logo_2016.svg/2048px-Osu%21_Logo_2016.svg.png", // 這裡提供一個有效的URL
         });
